@@ -9,18 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
-//    création de la table profil
     public function up()
     {
-        Schema::create('profil', function (Blueprint $table) {
-            $table->id();  // Clé primaire
+        Schema::create('profiles', function (Blueprint $table) {
+            $table->id();
+//            lier avec l'utilisateur
             $table->unsignedBigInteger('user_id');
             $table->string('prenom');
             $table->string('nom');
             $table->string('image')->nullable();
-            $table->enum('statut', ['inactif', 'en attente', 'actif'])->default('en attente');  // Statut
+            $table->enum('statut', ['inactif', 'en attente', 'actif'])->default('en attente');
             $table->timestamps();
+
+            // Ajout de la clé étrangère
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('profil');
+        Schema::dropIfExists('profiles');
     }
 };
