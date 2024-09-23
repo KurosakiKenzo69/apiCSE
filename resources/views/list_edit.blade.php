@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Liste des Profils</title>
+    <title>Liste des profils</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
@@ -16,9 +16,7 @@
         <tr>
             <th class="py-2">Nom</th>
             <th class="py-2">Prénom</th>
-            @if (auth()->check() && auth()->user()->role === 'admin')
-                <th class="py-2">Statut</th>
-            @endif
+            <th class="py-2">Statut</th>
             <th class="py-2">Actions</th>
         </tr>
         </thead>
@@ -27,13 +25,18 @@
             <tr>
                 <td class="border px-4 py-2">{{ $profile->nom }}</td>
                 <td class="border px-4 py-2">{{ $profile->prenom }}</td>
-                @if (auth()->check() && auth()->user()->role === 'admin')
-                    <td class="border px-4 py-2">{{ $profile->statut }}</td>
-                @endif
-                <td class="border px-4 py-2">
+                <td class="border px-4 py-2">{{ $profile->statut }}</td>
+                <td class="border px-4 py-2 flex flex-row">
                     <form action="{{ route('profiles.edit', $profile->id) }}" method="GET">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-5">
                             Modifier
+                        </button>
+                    </form>
+                    <form action="{{ route('profiles.delete', $profile->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                            Supprimer
                         </button>
                     </form>
                 </td>
@@ -42,7 +45,7 @@
         </tbody>
     </table>
 
-    <p>Retour à la <a href="{{ route('accueil') }}" class="text-blue-500 hover:underline">page d'accueil</a> </p>
+    <p>Retour à la <a href="{{ route('accueil') }}" class="text-blue-500 hover:underline">page d'accueil</a></p>
 </div>
 
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Liste des Profils</title>
+    <title>Liste des profils</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 p-8">
@@ -18,7 +18,9 @@
             <tr class="bg-gray-200">
                 <th class="py-2 px-4 border-b text-left">Nom</th>
                 <th class="py-2 px-4 border-b text-left">Prénom</th>
-                <th class="py-2 px-4 border-b text-left">Statut</th>
+                @if (auth()->check() && auth()->user()->role === 'admin')
+                    <th class="py-2 px-4 border-b text-left">Statut</th>
+                @endif
             </tr>
             </thead>
             <tbody>
@@ -26,7 +28,9 @@
                 <tr class="hover:bg-gray-100">
                     <td class="py-2 px-4 border-b">{{ $profile->nom }}</td>
                     <td class="py-2 px-4 border-b">{{ $profile->prenom }}</td>
-                    <td class="py-2 px-4 border-b">{{ $profile->statut }}</td>
+                    @if (auth()->check() && auth()->user()->role === 'admin')
+                        <td class="py-2 px-4 border-b">{{ $profile->statut }}</td>
+                    @endif
                 </tr>
             @endforeach
             </tbody>

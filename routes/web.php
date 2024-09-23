@@ -33,9 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profiles/edit', [ProfileController::class, 'listForEdit'])->name('profiles.list.edit');
     Route::get('/profiles/{id}/edit', [ProfileController::class, 'edit'])->name('profiles.edit');
 
-// Route pour mettre à jour un profil
     Route::put('/profiles/{id}', [ProfileController::class, 'update'])->name('profiles.update');
 
-// Route pour supprimer un profil
-    Route::delete('/profiles/{id}', [ProfileController::class, 'destroy'])->name('profiles.destroy');
+    Route::delete('/profiles/{id}', [ProfileController::class, 'destroy'])->name('profiles.delete');
 });
