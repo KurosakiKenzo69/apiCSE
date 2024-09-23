@@ -12,3 +12,6 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->post('/profiles.create', [ProfileController::class, 'store']);
+
+
+

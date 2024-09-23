@@ -20,30 +20,6 @@ class ProfileController extends Controller
         return view('list_profils', ['profiles' => $profiles]);
     }
 
-    public function update(Request $request, $id)
-    {
-        // vérification de l'utilisateur s'il est admin ou non
-        $user = Auth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'prenom' => 'sometimes|required|string|max:255',
-            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'statut' => 'sometimes|required|string|in:inactif,en attente,actif',
-        ]);
-
-        // Trouve le profil à modifier
-        $profile = Profile::findOrFail($id);
-
-        // Met à jour les données du profil
-        $profile->update($validatedData);
-
-        return response()->json(['message' => 'Profil mis à jour avec succès', 'profile' => $profile], 200);
-    }
-
     public function create(Request $request)
     {
 //        intérrogation de la requête
@@ -76,6 +52,56 @@ class ProfileController extends Controller
 
         return redirect()->back()->with('message',"Profil crée avec succès");
 
+    }
+
+    public function listForEdit()
+    {
+        $profiles = Profile::all();
+        return view('list_edit', compact('profiles'));
+    }
+
+    public function edit($id)
+    {
+        $profile = Profile::findOrFail($id);
+        return view('edit_profile', compact('profile'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Vérifier que l'utilisateur est administrateur
+        $user = Auth::user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Valider les données
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'statut' => 'required|in:inactif,en attente,actif',
+        ]);
+
+        // Trouver le profil et le mettre à jour
+        $profile = Profile::findOrFail($id);
+        $profile->update($validated);
+
+        return redirect()->route('profiles.list', $id)->with('success', 'Profil mis à jour avec succès.');
+    }
+
+    // supprimer un profil
+    public function destroy($id)
+    {
+        // Vérifier que l'utilisateur est administrateur
+        $user = Auth::user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Trouver et supprimer le profil
+        $profile = Profile::findOrFail($id);
+        $profile->delete();
+
+        return redirect()->route('accueil')->with('success', 'Profil supprimé avec succès.');
     }
 
 }

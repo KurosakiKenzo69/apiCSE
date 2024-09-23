@@ -21,7 +21,7 @@
             Voir les profils actifs
         </a>
 
-        <a href="{{ route('alter.profiles') }}"
+        <a href="{{ route('profiles.list.edit') }}"
            class="w-full bg-blue-500 text-white font-bold py-2 rounded hover:bg-blue-600 text-center">
             Modifier un profil
         </a>
