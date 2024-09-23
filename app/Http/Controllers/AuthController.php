@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 
+
 class AuthController extends Controller
 {
 //    enregistrement d'un utilisateur
@@ -17,6 +18,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|confirmed|min:8',
+            'role' => 'required|string|in:user,admin',
         ]);
 
 //        retour des erreurs de validation
@@ -29,12 +31,17 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user',
+            'role' => $request->role,
         ]);
 
         event(new Registered($user));
 
-        return response()->json(['message' => 'Utilisateur enregistré !'], 201);
+        $token = $user->createToken('Personal Access Token')->plainTextToken;
+
+        return response()->json(['message' =>
+            'Utilisateur enregistré !',
+            'token' => $token,
+        ], 201);
     }
 
     // connecter un utilisateur
@@ -42,21 +49,34 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        if (!auth()->attempt($credentials)) {
-            return response()->json(['message' => 'Identifiants incorrects, veuillez réessayer'], 401);
+        if (auth()->attempt($credentials)) {
+            // Si la connexion réussit, rediriger vers la page d'accueil
+            return redirect()->route('accueil')->with('success', 'Connexion réussie !');
+        } else {
+            // Si la connexion échoue, retourner une erreur avec un message
+            return redirect()->back()->withErrors([
+                'email' => 'Les identifiants sont incorrects. Veuillez réessayer.',
+            ])->withInput($request->only('email'));
         }
 
-        $user = auth()->user();
-        $token = $user->createToken('Personal Access Token')->plainTextToken;
+    }
 
-        return response()->json(['token' => $token], 200);
+    public function showLoginForm()
+    {
+        return view('login');
+    }
+
+    public function showRegisterForm()
+    {
+        return view('register');
     }
 
     // déconnecter un utilisateur
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Déconnexion réussie'], 200);
+        if ($request->user()) {
+            $request->user()->tokens()->delete();
+        }
+        return redirect()->route('login')->with('success', 'Déconnexion réussie !');
     }
 }

@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-//        ajout colonne role à la table users
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('user');
+            if (!Schema::hasColumn('users', 'role')) {
+                $table->enum('role', ['admin', 'user'])->default('user');
+            }
         });
     }
 

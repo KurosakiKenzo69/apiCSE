@@ -21,7 +21,6 @@ return new class extends Migration
             $table->enum('statut', ['inactif', 'en attente', 'actif'])->default('en attente');
             $table->timestamps();
 
-            // Ajout de la clé étrangère
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
